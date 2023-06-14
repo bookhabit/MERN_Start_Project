@@ -141,6 +141,28 @@ app.post('/post/create', (req, res) => {
         res.json({ postDoc, addedLinkPhotos });
     }));
 });
+// post 수정
+app.put('/post/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { token } = req.cookies;
+    const { postId, title, addedLinkPhotos, description, } = req.body;
+    jsonwebtoken_1.default.verify(token, jwtSecret, {}, (err, userDataCallback) => __awaiter(void 0, void 0, void 0, function* () {
+        const userData = userDataCallback;
+        if (err)
+            throw err;
+        const postDoc = yield Post_1.default.findById(postId);
+        if (postDoc) {
+            if (postDoc.author) {
+                if (userData.id === postDoc.author.toString()) {
+                    postDoc.set({
+                        title, photos: addedLinkPhotos, description,
+                    });
+                    yield postDoc.save();
+                    res.json(postDoc);
+                }
+            }
+        }
+    }));
+}));
 // 로그인 유저가 등록한 post 찾기
 app.get('/user-posts', (req, res) => {
     const { token } = req.cookies;

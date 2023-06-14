@@ -138,6 +138,28 @@ app.post('/post/create',(req:Request,res:Response)=>{
   });
 })
 
+// post 수정
+app.put('/post/update',async (req,res)=>{
+  const {token} = req.cookies;
+  const {postId,title,addedLinkPhotos,description,
+  } = req.body;
+  jwt.verify(token, jwtSecret, {}, async (err, userDataCallback) => {
+    const userData = userDataCallback as UserDataType
+    if(err) throw err;
+    const postDoc = await Post.findById(postId)
+    if(postDoc){
+      if(postDoc.author){
+        if(userData.id === postDoc.author.toString()){
+          postDoc.set({
+            title,photos:addedLinkPhotos,description,
+          })
+          await postDoc.save();
+          res.json(postDoc)
+        }
+      }
+    }
+  });  
+})
 
 
 

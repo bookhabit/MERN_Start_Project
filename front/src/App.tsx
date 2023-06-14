@@ -6,7 +6,7 @@ import axios from 'axios';
 import LoginPage from './pages/LoginPage';
 import ReigsterPage from './pages/RegisterPage';
 import { UserContextProvider } from './UserContext';
-import PostForm from './components/testRestAPI/PostForm';
+import PostFormPage from './pages/PostFormPage';
 import AccountPage from './pages/ProfilePage';
 import PostDetail from './pages/PostDetail';
 import ProfilePage from './pages/ProfilePage';
@@ -23,9 +23,9 @@ function App() {
           <Route path="/" element={<IndexPage/>} />
           <Route path="/login" element={<LoginPage/>} />
           <Route path="/register" element={<ReigsterPage/>} />
-          <Route path={'/post/create'} element={<PostForm/>}/>
+          <Route path={'/post/create'} element={<PostFormPage/>}/>
+          <Route path={'/post/update/:id'} element={<PostFormPage/>}/>
           <Route path={'/post/:id'} element={<PostDetail/>}/>
-          {/* <Route path={'/edit/:id'} element={<EditPost/>}/> */}
           <Route path="/account" element={<ProfilePage />} />
           <Route path="/account/posts" element={<UserPostsPage />} />
         </Route>

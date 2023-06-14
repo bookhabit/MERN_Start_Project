@@ -1,15 +1,27 @@
-import {  useState } from "react";
-import PhotosUploader from "./PhotosUploader";
+import {  useEffect, useState } from "react";
+import PhotosUploader from "../components/testRestAPI/PhotosUploader";
 import { Navigate, useParams } from "react-router";
 import axios from "axios";
 // import PhotosUploader from "./PhotosUploader";
 
-export default function PostForm() {
+export default function PostFormPage() {
     const {id:postId} = useParams();
     const [title,setTitle] = useState('');
     const [description,setDescription] = useState('');
     const [addedLinkPhotos,setAddedLinkPhotos] = useState<string[]>([]);
     const [redirect,setRedirect] = useState(false);
+
+    useEffect(() => {
+      if (!postId) {
+        return;
+      }
+      axios.get('/post/'+postId).then(response => {
+         const {data} = response;
+         setTitle(data.title);
+         setAddedLinkPhotos(data.photos);
+         setDescription(data.description);
+      });
+    }, [postId]);
 
     function inputHeader(text:string):JSX.Element {
         return (

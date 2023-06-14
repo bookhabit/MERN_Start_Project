@@ -19,7 +19,7 @@ export default function UserPostsPage(){
                 {userPosts && (
                     <div className="mt-8 grid gap-x-6 gap-y-8 xs:grid-cols-1  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                     {userPosts.length > 0 && userPosts.map(post => (
-                      <Link to={'/post/'+post._id}>
+                      <Link to={'/post/update/'+post._id}>
                         <div className="bg-gray-500 mb-2 rounded-2xl flex">
                           {post.photos?.[0] && (
                             <Image className="rounded-2xl object-cover aspect-square" src={post.photos?.[0]}/>
