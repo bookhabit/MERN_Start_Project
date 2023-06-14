@@ -24,6 +24,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const image_downloader_1 = __importDefault(require("image-downloader"));
 const multer_1 = __importDefault(require("multer"));
 const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const bcryptSalt = bcryptjs_1.default.genSaltSync(10);
@@ -94,26 +95,29 @@ app.get('/profile', (req, res) => {
 // input string(이미지주소)으로 이미지업로드
 app.post('/upload-by-link', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { link } = req.body;
-    console.log(link);
     const newName = 'photo' + Date.now() + '.jpg';
+    const uploadPath = path_1.default.join(__dirname, 'uploads', newName); // 경로 수정
+    console.log(uploadPath);
     yield image_downloader_1.default.image({
         url: link,
-        dest: __dirname + '/uploads/' + newName,
+        dest: uploadPath,
     });
     res.json(newName);
 }));
 // input file로 파일업로드
-const photosMiddleware = (0, multer_1.default)({ dest: 'uploads/' });
+const photosMiddleware = (0, multer_1.default)({ dest: path_1.default.join(__dirname, 'uploads') }); // 경로 수정
 app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
     const uploadFiles = [];
     if (Array.isArray(req.files)) {
         for (let i = 0; i < req.files.length; i++) {
+            console.log(req.files);
             const { path, originalname } = req.files[i];
             const parts = originalname.split('.');
             const ext = parts[parts.length - 1];
-            const newPath = path + '.' + ext;
-            fs_1.default.renameSync(path, newPath);
-            uploadFiles.push(newPath.replace('uploads/', ''));
+            const newName = 'photo' + Date.now() + '.' + ext;
+            const uploadPath = path_1.default.join(__dirname, 'uploads', newName); // 경로 수정
+            fs_1.default.renameSync(path, uploadPath);
+            uploadFiles.push(newName);
         }
     }
     res.json(uploadFiles);

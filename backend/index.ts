@@ -12,6 +12,7 @@ import cookieParser from "cookie-parser";
 import imageDownloader from "image-downloader"
 import multer from 'multer'
 import fs from 'fs'
+import pathLB from "path"
 
 dotenv.config();
 const app: Express = express();
@@ -84,34 +85,37 @@ app.get('/profile', (req:Request,res:Response) => {
 // REST_API
 
 // input string(이미지주소)으로 이미지업로드
-app.post('/upload-by-link',async(req:Request,res:Response)=>{
-  const {link}:{link:string} = req.body;
-  console.log(link)
-  const newName = 'photo'+ Date.now() + '.jpg'
+app.post('/upload-by-link', async (req: Request, res: Response) => {
+  const { link }: { link: string } = req.body;
+  const newName = 'photo' + Date.now() + '.jpg';
+  const uploadPath = pathLB.join(__dirname, 'uploads', newName); // 경로 수정
+  console.log(uploadPath);
   await imageDownloader.image({
-    url:link,
-    dest:__dirname+'/uploads/'+newName,
-  })
-  res.json(newName)
-})
+    url: link,
+    dest: uploadPath,
+  });
+  res.json(newName);
+});
 
 // input file로 파일업로드
-const photosMiddleware = multer({dest:'uploads/'})
-app.post('/upload',photosMiddleware.array('photos',100),(req:Request,res:Response)=>{
-const uploadFiles:string[] = [];
+const photosMiddleware = multer({ dest: pathLB.join(__dirname, 'uploads') }); // 경로 수정
+app.post('/upload', photosMiddleware.array('photos', 100), (req: Request, res: Response) => {
+  const uploadFiles: string[] = [];
 
-if (Array.isArray(req.files)) {
-  for (let i = 0; i < req.files.length; i++) {
-    const { path, originalname } = req.files[i];
-    const parts = originalname.split('.');
-    const ext = parts[parts.length - 1];
-    const newPath = path + '.' + ext;
-    fs.renameSync(path, newPath);
-    uploadFiles.push(newPath.replace('uploads/', ''));
+  if (Array.isArray(req.files)) {
+    for (let i = 0; i < req.files.length; i++) {
+      console.log(req.files);
+      const { path, originalname } = req.files[i];
+      const parts = originalname.split('.');
+      const ext = parts[parts.length - 1];
+      const newName = 'photo' + Date.now() + '.' + ext;
+      const uploadPath = pathLB.join(__dirname, 'uploads', newName); // 경로 수정
+      fs.renameSync(path, uploadPath);
+      uploadFiles.push(newName);
+    }
   }
-}
-res.json(uploadFiles);
-})
+  res.json(uploadFiles);
+});
 
 // 게시글 등록
 app.post('/post/create',(req:Request,res:Response)=>{
