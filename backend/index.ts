@@ -4,10 +4,14 @@ import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import connectToMongoDB from "./models";
 import User from "./models/User";
-import bcrypt from "bcryptjs"
-import jwt from "jsonwebtoken"
+import Post from "./models/Post";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { UserDataType, UserType } from "./Types/UserType";
 import cookieParser from "cookie-parser";
+import imageDownloader from "image-downloader"
+import multer from 'multer'
+import fs from 'fs'
 
 dotenv.config();
 const app: Express = express();
@@ -18,6 +22,7 @@ const jwtSecret = 'fasefraw4r5r3wq45wdfgw34twdfg';
 
 app.use(express.json());
 app.use(cookieParser());
+app.use('/uploads/',express.static(__dirname+'/uploads'))
 app.use(cors({credentials:true,origin:'http://localhost:5173'}));
 
 // 몽고DB 연결
@@ -76,5 +81,53 @@ app.get('/profile', (req:Request,res:Response) => {
   }
 });
 
+// REST_API
+
+// input string(이미지주소)으로 이미지업로드
+app.post('/upload-by-link',async(req:Request,res:Response)=>{
+  const {link}:{link:string} = req.body;
+  console.log(link)
+  const newName = 'photo'+ Date.now() + '.jpg'
+  await imageDownloader.image({
+    url:link,
+    dest:__dirname+'/uploads/'+newName,
+  })
+  res.json(newName)
+})
+
+// input file로 파일업로드
+const photosMiddleware = multer({dest:'uploads/'})
+app.post('/upload',photosMiddleware.array('photos',100),(req:Request,res:Response)=>{
+const uploadFiles:string[] = [];
+
+if (Array.isArray(req.files)) {
+  for (let i = 0; i < req.files.length; i++) {
+    const { path, originalname } = req.files[i];
+    const parts = originalname.split('.');
+    const ext = parts[parts.length - 1];
+    const newPath = path + '.' + ext;
+    fs.renameSync(path, newPath);
+    uploadFiles.push(newPath.replace('uploads/', ''));
+  }
+}
+res.json(uploadFiles);
+})
+
+// 게시글 등록
+app.post('/post/create',(req:Request,res:Response)=>{
+  const {token} = req.cookies;
+  const {title,addedPhotos,description,
+  } = req.body;
+  console.log(addedPhotos)
+  jwt.verify(token, jwtSecret, {}, async (err, userDataCallback) => {
+    const userData = userDataCallback as UserDataType
+    if (err) throw err;
+    const placeDoc = await Post.create({
+      owner:userData.id,
+      title,photos:addedPhotos,description,
+    })
+    res.json({placeDoc,addedPhotos})
+  });
+})
 
 app.listen(4000)

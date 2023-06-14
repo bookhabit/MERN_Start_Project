@@ -17,15 +17,20 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const models_1 = __importDefault(require("./models"));
 const User_1 = __importDefault(require("./models/User"));
+const Post_1 = __importDefault(require("./models/Post"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const image_downloader_1 = __importDefault(require("image-downloader"));
+const multer_1 = __importDefault(require("multer"));
+const fs_1 = __importDefault(require("fs"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const bcryptSalt = bcryptjs_1.default.genSaltSync(10);
 const jwtSecret = 'fasefraw4r5r3wq45wdfgw34twdfg';
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
+app.use('/uploads/', express_1.default.static(__dirname + '/uploads'));
 app.use((0, cors_1.default)({ credentials: true, origin: 'http://localhost:5173' }));
 // 몽고DB 연결
 (0, models_1.default)();
@@ -84,5 +89,49 @@ app.get('/profile', (req, res) => {
     else {
         res.json(null);
     }
+});
+// REST_API
+// input string(이미지주소)으로 이미지업로드
+app.post('/upload-by-link', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { link } = req.body;
+    console.log(link);
+    const newName = 'photo' + Date.now() + '.jpg';
+    yield image_downloader_1.default.image({
+        url: link,
+        dest: __dirname + '/uploads/' + newName,
+    });
+    res.json(newName);
+}));
+// input file로 파일업로드
+const photosMiddleware = (0, multer_1.default)({ dest: 'uploads/' });
+app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
+    const uploadFiles = [];
+    if (Array.isArray(req.files)) {
+        for (let i = 0; i < req.files.length; i++) {
+            const { path, originalname } = req.files[i];
+            const parts = originalname.split('.');
+            const ext = parts[parts.length - 1];
+            const newPath = path + '.' + ext;
+            fs_1.default.renameSync(path, newPath);
+            uploadFiles.push(newPath.replace('uploads/', ''));
+        }
+    }
+    res.json(uploadFiles);
+});
+// 게시글 등록
+app.post('/post/create', (req, res) => {
+    const { token } = req.cookies;
+    const { title, addedPhotos, description, } = req.body;
+    console.log(addedPhotos);
+    jsonwebtoken_1.default.verify(token, jwtSecret, {}, (err, userDataCallback) => __awaiter(void 0, void 0, void 0, function* () {
+        const userData = userDataCallback;
+        if (err)
+            throw err;
+        const placeDoc = yield Post_1.default.create({
+            owner: userData.id,
+            title, photos: addedPhotos, description,
+        });
+        res.json({ placeDoc, addedPhotos });
+    }));
 });
 app.listen(4000);
