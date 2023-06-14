@@ -1,6 +1,7 @@
-import {Link, Navigate, useNavigate} from "react-router-dom";
-import {useContext, useState} from "react";
+import {Link, useNavigate} from "react-router-dom";
+import { useState} from "react";
 import axios from "axios";
+
 
 export default function ReigsterPage() {
   const [name,setName] = useState<string>('');
@@ -26,7 +27,7 @@ export default function ReigsterPage() {
   }
 
   if(redirect){
-    router('/')
+    router('/login')
   }
 
   return (
