@@ -9,11 +9,8 @@ const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({ credentials: true, origin: 'http://localhost:5173' }));
 app.get('/', (req, res) => {
     res.send('Hello World From the Typescript Server!');
 });
-const port = process.env.PORT || 4000;
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
-});
+app.listen(4000);
