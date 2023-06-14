@@ -138,13 +138,20 @@ app.post('/post/create',(req:Request,res:Response)=>{
   });
 })
 
+
+
+
+
 // 로그인 유저가 등록한 post 찾기
 app.get('/user-posts', (req,res) => {
   const {token} = req.cookies;
   jwt.verify(token, jwtSecret, {}, async (err, userDataCallback) => {
+    if(err) throw err;
     const userData = userDataCallback as UserDataType
     const {id} = userData;
-    res.json( await Post.find({owner:id}) );
+    const userPostList = await Post.find({author:id}) 
+    
+    res.json(userPostList);
   });
 });
 

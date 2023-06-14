@@ -2,13 +2,12 @@ import {Link, Navigate} from "react-router-dom";
 import {useContext, useState} from "react";
 import axios from "axios";
 import { UserContext, UserContextType } from "../UserContext";
-import { UserType } from "../Types/userType";
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [redirect, setRedirect] = useState(false);
-  const { user,setUser } = useContext<UserContextType>(UserContext);
+  const { setUser } = useContext<UserContextType>(UserContext);
 
   const handleLogin = async (event:React.FormEvent)=>{
     event.preventDefault();

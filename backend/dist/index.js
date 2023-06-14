@@ -145,9 +145,12 @@ app.post('/post/create', (req, res) => {
 app.get('/user-posts', (req, res) => {
     const { token } = req.cookies;
     jsonwebtoken_1.default.verify(token, jwtSecret, {}, (err, userDataCallback) => __awaiter(void 0, void 0, void 0, function* () {
+        if (err)
+            throw err;
         const userData = userDataCallback;
         const { id } = userData;
-        res.json(yield Post_1.default.find({ owner: id }));
+        const userPostList = yield Post_1.default.find({ author: id });
+        res.json(userPostList);
     }));
 });
 // id값으로 post 찾기

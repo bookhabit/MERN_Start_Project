@@ -5,29 +5,25 @@ import { UserType } from "./Types/userType";
 export type UserContextType = {
   user: UserType | null;
   setUser: (user: UserType | null) => void;
-  ready: boolean;
 };
 
 export const UserContext = createContext<UserContextType>({
   user: null,
   setUser: () => {},
-  ready: false,
 });
 
 export function UserContextProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserType | null>(null);
-  const [ready, setReady] = useState(false);
+  const [user, setUser] = useState<UserType | null>(null);  
   useEffect(() => {
     if (!user) {
       axios.get('/profile')
             .then(({data}:{data:UserType}) => {
               setUser(data);
-              setReady(true);
             });
     }
   }, []);
   return (
-    <UserContext.Provider value={{user,setUser,ready}}>
+    <UserContext.Provider value={{user,setUser}}>
       {children}
     </UserContext.Provider>
   );

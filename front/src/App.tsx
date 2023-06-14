@@ -7,8 +7,10 @@ import LoginPage from './pages/LoginPage';
 import ReigsterPage from './pages/RegisterPage';
 import { UserContextProvider } from './UserContext';
 import PostForm from './components/testRestAPI/PostForm';
-import AccountPage from './pages/AccountPage';
+import AccountPage from './pages/ProfilePage';
 import PostDetail from './pages/PostDetail';
+import ProfilePage from './pages/ProfilePage';
+import UserPostsPage from './pages/UserPostsPage';
 
 axios.defaults.baseURL = "http://localhost:4000"
 axios.defaults.withCredentials = true;
@@ -24,8 +26,8 @@ function App() {
           <Route path={'/post/create'} element={<PostForm/>}/>
           <Route path={'/post/:id'} element={<PostDetail/>}/>
           {/* <Route path={'/edit/:id'} element={<EditPost/>}/> */}
-          <Route path="/account" element={<AccountPage />} />
-          <Route path="/account/posts" element={<AccountPage />} />
+          <Route path="/account" element={<ProfilePage />} />
+          <Route path="/account/posts" element={<UserPostsPage />} />
         </Route>
       </Routes>
     </UserContextProvider>
