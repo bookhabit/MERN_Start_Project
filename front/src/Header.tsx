@@ -1,16 +1,9 @@
 import { useContext } from "react";
 import {Link} from "react-router-dom";
-import { UserContext } from "./UserContext";
-
-type UserType={
-  name:String,
-  email:String,
-  _id:String
-}
+import { UserContext, UserContextType } from "./UserContext";
 
 export default function Header() {
-  const contextValue = useContext(UserContext);
-  const { user }: { user?: UserType } = contextValue || {};
+  const { user } = useContext<UserContextType>(UserContext);
   return (
     <header className="flex justify-between">
       <Link to={'/'} className="flex items-center gap-1">
