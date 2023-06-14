@@ -138,7 +138,7 @@ app.post('/post/create',(req:Request,res:Response)=>{
   });
 })
 
-// 로그인 유저가 등록한 숙소리스트 찾기
+// 로그인 유저가 등록한 post 찾기
 app.get('/user-posts', (req,res) => {
   const {token} = req.cookies;
   jwt.verify(token, jwtSecret, {}, async (err, userDataCallback) => {
@@ -148,13 +148,13 @@ app.get('/user-posts', (req,res) => {
   });
 });
 
-// id값으로 숙소 찾기
-app.get('/posts/:id',async (req,res)=>{
+// id값으로 post 찾기
+app.get('/post/:id',async (req,res)=>{
   const {id} = req.params;
   res.json(await Post.findById(id))
 })
 
-// 메인페이지 숙소리스트 전체 찾기
+// 메인페이지 post 전체 찾기
 app.get('/posts',async (req,res)=>{
   res.json(await Post.find()) 
 })

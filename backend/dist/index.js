@@ -141,7 +141,7 @@ app.post('/post/create', (req, res) => {
         res.json({ postDoc, addedLinkPhotos });
     }));
 });
-// 로그인 유저가 등록한 숙소리스트 찾기
+// 로그인 유저가 등록한 post 찾기
 app.get('/user-posts', (req, res) => {
     const { token } = req.cookies;
     jsonwebtoken_1.default.verify(token, jwtSecret, {}, (err, userDataCallback) => __awaiter(void 0, void 0, void 0, function* () {
@@ -150,12 +150,12 @@ app.get('/user-posts', (req, res) => {
         res.json(yield Post_1.default.find({ owner: id }));
     }));
 });
-// id값으로 숙소 찾기
-app.get('/posts/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+// id값으로 post 찾기
+app.get('/post/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     res.json(yield Post_1.default.findById(id));
 }));
-// 메인페이지 숙소리스트 전체 찾기
+// 메인페이지 post 전체 찾기
 app.get('/posts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.json(yield Post_1.default.find());
 }));
