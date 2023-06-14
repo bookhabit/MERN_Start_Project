@@ -138,6 +138,25 @@ app.post('/post/create',(req:Request,res:Response)=>{
   });
 })
 
-// 
+// 로그인 유저가 등록한 숙소리스트 찾기
+app.get('/user-posts', (req,res) => {
+  const {token} = req.cookies;
+  jwt.verify(token, jwtSecret, {}, async (err, userDataCallback) => {
+    const userData = userDataCallback as UserDataType
+    const {id} = userData;
+    res.json( await Post.find({owner:id}) );
+  });
+});
+
+// id값으로 숙소 찾기
+app.get('/posts/:id',async (req,res)=>{
+  const {id} = req.params;
+  res.json(await Post.findById(id))
+})
+
+// 메인페이지 숙소리스트 전체 찾기
+app.get('/posts',async (req,res)=>{
+  res.json(await Post.find()) 
+})
 
 app.listen(4000)
