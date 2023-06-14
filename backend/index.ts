@@ -120,17 +120,16 @@ app.post('/upload', photosMiddleware.array('photos', 100), (req: Request, res: R
 // 게시글 등록
 app.post('/post/create',(req:Request,res:Response)=>{
   const {token} = req.cookies;
-  const {title,addedPhotos,description,
+  const {title,addedLinkPhotos,description,
   } = req.body;
-  console.log(addedPhotos)
   jwt.verify(token, jwtSecret, {}, async (err, userDataCallback) => {
     const userData = userDataCallback as UserDataType
     if (err) throw err;
-    const placeDoc = await Post.create({
-      owner:userData.id,
-      title,photos:addedPhotos,description,
+    const postDoc = await Post.create({
+      author:userData.id,
+      title,photos:addedLinkPhotos,description,
     })
-    res.json({placeDoc,addedPhotos})
+    res.json({postDoc,addedLinkPhotos})
   });
 })
 

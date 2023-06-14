@@ -125,17 +125,16 @@ app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
 // 게시글 등록
 app.post('/post/create', (req, res) => {
     const { token } = req.cookies;
-    const { title, addedPhotos, description, } = req.body;
-    console.log(addedPhotos);
+    const { title, addedLinkPhotos, description, } = req.body;
     jsonwebtoken_1.default.verify(token, jwtSecret, {}, (err, userDataCallback) => __awaiter(void 0, void 0, void 0, function* () {
         const userData = userDataCallback;
         if (err)
             throw err;
-        const placeDoc = yield Post_1.default.create({
-            owner: userData.id,
-            title, photos: addedPhotos, description,
+        const postDoc = yield Post_1.default.create({
+            author: userData.id,
+            title, photos: addedLinkPhotos, description,
         });
-        res.json({ placeDoc, addedPhotos });
+        res.json({ postDoc, addedLinkPhotos });
     }));
 });
 app.listen(4000);

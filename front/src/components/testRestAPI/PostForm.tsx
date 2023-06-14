@@ -1,12 +1,15 @@
 import {  useState } from "react";
 import PhotosUploader from "./PhotosUploader";
+import { Navigate, useParams } from "react-router";
+import axios from "axios";
 // import PhotosUploader from "./PhotosUploader";
 
 export default function PostForm() {
+    const {id:postId} = useParams();
     const [title,setTitle] = useState('');
     const [description,setDescription] = useState('');
     const [addedLinkPhotos,setAddedLinkPhotos] = useState<string[]>([]);
-    console.log(addedLinkPhotos)
+    const [redirect,setRedirect] = useState(false);
 
     function inputHeader(text:string):JSX.Element {
         return (
@@ -26,8 +29,34 @@ export default function PostForm() {
           </>
         );
       }
+
+    // 숙소 등록 및 수정
+    async function savePlace(ev:React.FormEvent) {
+        ev.preventDefault();
+        const post = {
+            title, addedLinkPhotos,description, 
+        };
+        console.log(post);
+        if (postId) {
+            // update
+            await axios.put('/post/update', {
+                postId, ...post
+            });
+            setRedirect(true);
+        } else {
+            // new post
+            await axios.post('/post/create', post);
+            setRedirect(true);
+        }
+
+    }
+
+    if (redirect) {
+        return <Navigate to={'/'} />
+    }
+
     return(
-        <form>
+        <form onSubmit={savePlace}>
             {preInput('제목', '')}
             <input 
                 type="text" 
