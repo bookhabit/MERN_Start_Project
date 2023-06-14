@@ -74,6 +74,10 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.json('not found');
     }
 }));
+// 로그아웃
+app.post('/logout', (req, res) => {
+    res.cookie('token', '').json(true);
+});
 // 로그인 유지
 app.get('/profile', (req, res) => {
     const { token } = req.cookies;
@@ -137,4 +141,5 @@ app.post('/post/create', (req, res) => {
         res.json({ postDoc, addedLinkPhotos });
     }));
 });
+// 
 app.listen(4000);

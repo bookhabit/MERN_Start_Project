@@ -66,6 +66,11 @@ app.post('/login', async (req:Request,res:Response) => {
   }
 });
 
+// 로그아웃
+app.post('/logout',(req:Request,res:Response)=>{
+  res.cookie('token','').json(true);
+})
+
 // 로그인 유지
 app.get('/profile', (req:Request,res:Response) => {
   const {token} = req.cookies;
@@ -132,5 +137,7 @@ app.post('/post/create',(req:Request,res:Response)=>{
     res.json({postDoc,addedLinkPhotos})
   });
 })
+
+// 
 
 app.listen(4000)
