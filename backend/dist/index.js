@@ -68,4 +68,21 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.json('not found');
     }
 }));
+// 로그인 유지
+app.get('/profile', (req, res) => {
+    const { token } = req.cookies;
+    if (token) {
+        jsonwebtoken_1.default.verify(token, jwtSecret, {}, (err, userDataCallback) => __awaiter(void 0, void 0, void 0, function* () {
+            const userData = userDataCallback;
+            if (err)
+                throw err;
+            const userDoc = yield User_1.default.findById(userData.id);
+            const { name, email, _id } = userDoc;
+            res.json({ name, email, _id });
+        }));
+    }
+    else {
+        res.json(null);
+    }
+});
 app.listen(4000);

@@ -6,7 +6,7 @@ import connectToMongoDB from "./models";
 import User from "./models/User";
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
-import { UserType } from "./Types/UserType";
+import { UserDataType, UserType } from "./Types/UserType";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
@@ -24,7 +24,7 @@ app.use(cors({credentials:true,origin:'http://localhost:5173'}));
 connectToMongoDB();
 
 // 회원가입
-app.post('/register', async (req,res) => {
+app.post('/register', async (req:Request,res:Response) => {
       const {name,email,password} = req.body;
       try {
           const userDoc = await User.create({
@@ -39,7 +39,7 @@ app.post('/register', async (req,res) => {
   });
 
 // 로그인
-app.post('/login', async (req,res) => {
+app.post('/login', async (req:Request,res:Response) => {
   const {email,password} = req.body;
   const userDoc = await User.findOne({email}) as UserType;
   if (userDoc) {
@@ -57,6 +57,22 @@ app.post('/login', async (req,res) => {
     }
   } else {
     res.json('not found');
+  }
+});
+
+// 로그인 유지
+app.get('/profile', (req:Request,res:Response) => {
+  const {token} = req.cookies;
+  if (token) {
+      jwt.verify(token, jwtSecret, {}, async (err, userDataCallback) => {
+        const userData = userDataCallback as UserDataType
+        if (err) throw err;
+       const userDoc = await User.findById(userData.id) as UserType;
+       const {name,email,_id} = userDoc;
+      res.json({name,email,_id});
+      });
+  } else {
+      res.json(null);
   }
 });
 
