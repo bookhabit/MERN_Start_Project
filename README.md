@@ -22,3 +22,8 @@ useContext
 <p>인증 및 로그인 유지</p>
 <p>기본 CRUD - REST API</p>
 <p>이미지 파일 업로드 미들웨어</p>
+
+
+<h2>환경변수</h2>
+<p>backend 폴더 > env파일 생성</p>
+<p>MONGO_URL=몽고db connect URL 작성</p>
