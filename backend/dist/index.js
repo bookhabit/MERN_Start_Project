@@ -32,22 +32,29 @@ const jwtSecret = 'fasefraw4r5r3wq45wdfgw34twdfg';
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
 app.use('/uploads/', express_1.default.static(__dirname + '/uploads'));
-app.use((0, cors_1.default)({ credentials: true, origin: 'http://localhost:5173' }));
+app.use((0, cors_1.default)({ credentials: true, origin: 'http://localhost:5174' }));
 // 몽고DB 연결
 (0, models_1.default)();
 // 회원가입
 app.post('/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, email, password } = req.body;
-    try {
-        const userDoc = yield User_1.default.create({
-            name,
-            email,
-            password: bcryptjs_1.default.hashSync(password, bcryptSalt),
-        });
-        res.json(userDoc);
+    // validation
+    const dbEmail = yield User_1.default.findOne({ email: email });
+    if ((dbEmail === null || dbEmail === void 0 ? void 0 : dbEmail.email) === email) {
+        return res.status(409).json('이미 존재하는 이메일 입니다.');
     }
-    catch (e) {
-        res.status(422).json(e);
+    else {
+        try {
+            const userDoc = yield User_1.default.create({
+                name,
+                email,
+                password: bcryptjs_1.default.hashSync(password, bcryptSalt),
+            });
+            res.status(200).json({ userDoc });
+        }
+        catch (e) {
+            res.status(422);
+        }
     }
 }));
 // 로그인
@@ -67,11 +74,11 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             });
         }
         else {
-            res.status(422).json('pass not ok');
+            res.status(400).json('비밀번호가 일치하지 않습니다');
         }
     }
     else {
-        res.json('not found');
+        res.status(404).json('해당 이메일의 유저를 찾을 수 없습니다');
     }
 }));
 // 로그아웃

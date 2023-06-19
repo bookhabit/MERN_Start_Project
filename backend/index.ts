@@ -24,46 +24,53 @@ const jwtSecret = 'fasefraw4r5r3wq45wdfgw34twdfg';
 app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads/',express.static(__dirname+'/uploads'))
-app.use(cors({credentials:true,origin:'http://localhost:5173'}));
+app.use(cors({credentials:true,origin:'http://localhost:5174'}));
 
 // 몽고DB 연결
 connectToMongoDB();
 
 // 회원가입
 app.post('/register', async (req:Request,res:Response) => {
-      const {name,email,password} = req.body;
-      try {
-          const userDoc = await User.create({
-          name,
-          email,
-          password:bcrypt.hashSync(password, bcryptSalt),
-          });
-          res.json(userDoc);
-      } catch (e) {
-          res.status(422).json(e);
-      }
-  });
+  const {name,email,password} = req.body;
+  // validation
+  const dbEmail=await User.findOne({email:email})
+  if(dbEmail?.email===email){
+    return res.status(409).json('이미 존재하는 이메일 입니다.');
+  }else{
+    try{
+      const userDoc = await User.create({
+        name,
+        email,
+        password:bcrypt.hashSync(password, bcryptSalt),
+        });
+        res.status(200).json({userDoc});
+    }catch(e){
+      res.status(422)
+    }
+  }
+  }
+);
 
 // 로그인
 app.post('/login', async (req:Request,res:Response) => {
-  const {email,password} = req.body;
-  const userDoc = await User.findOne({email}) as UserType;
-  if (userDoc) {
-    const passOk = bcrypt.compareSync(password, userDoc.password);
-    if (passOk) {
-      jwt.sign({
-        email:userDoc.email,
-        id:userDoc._id
-      }, jwtSecret, {}, (err,token) => {
-        if (err) throw err;
-        res.cookie('token', token).json(userDoc);
-      });
-    } else {
-      res.status(422).json('pass not ok');
-    }
-  } else {
-    res.json('not found');
-  }
+const {email,password} = req.body;
+const userDoc = await User.findOne({email}) as UserType;
+if (userDoc) {
+const passOk = bcrypt.compareSync(password, userDoc.password);
+if (passOk) {
+  jwt.sign({
+    email:userDoc.email,
+    id:userDoc._id
+  }, jwtSecret, {}, (err,token) => {
+    if (err) throw err;
+    res.cookie('token', token).json(userDoc);
+  });
+} else {
+  res.status(400).json('비밀번호가 일치하지 않습니다');
+}
+} else {
+res.status(404).json('해당 이메일의 유저를 찾을 수 없습니다');
+}
 });
 
 // 로그아웃

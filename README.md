@@ -23,6 +23,14 @@ useContext
 <p>기본 CRUD - REST API</p>
 <p>이미지 파일 업로드 미들웨어</p>
 
+<h2>애니메이션</h2>
+<p>gasp 라이브러리를 활용한 간단한 애니메이션</p>
+
+<h2>공통컴포넌트</h2>
+<p>src > elements 디렉토리에 기본 Input,Button,Label,Textarea  </p>
+
+<h2>form 유효성검사</h2>
+<p>회원가입 로그인 유효성 검사 기능</p>
 
 <h2>환경변수</h2>
 <p>backend 폴더 > env파일 생성</p>

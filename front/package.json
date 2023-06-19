@@ -12,9 +12,11 @@
   "dependencies": {
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.4.0",
+    "gsap": "^3.12.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.12.1"
+    "react-router-dom": "^6.12.1",
+    "tailwind-styled-components": "^2.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.37",
