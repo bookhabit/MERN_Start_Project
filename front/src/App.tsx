@@ -12,6 +12,7 @@ import PostDetail from './pages/PostDetail';
 import ProfilePage from './pages/ProfilePage';
 import UserPostsPage from './pages/UserPostsPage';
 import { ValidateContextProvider } from './Context/ValidateContext';
+import AnimationPage from './pages/AnimationPage';
 
 axios.defaults.baseURL = "http://localhost:4000"
 axios.defaults.withCredentials = true;
@@ -30,6 +31,7 @@ function App() {
             <Route path={'/post/:id'} element={<PostDetail/>}/>
             <Route path="/account" element={<ProfilePage />} />
             <Route path="/account/posts" element={<UserPostsPage />} />
+            <Route path="/animation" element={<AnimationPage/>} />
           </Route>
         </Routes>
       </ValidateContextProvider>

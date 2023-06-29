@@ -32,7 +32,7 @@ const jwtSecret = 'fasefraw4r5r3wq45wdfgw34twdfg';
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
 app.use('/uploads/', express_1.default.static(__dirname + '/uploads'));
-app.use((0, cors_1.default)({ credentials: true, origin: 'http://localhost:5174' }));
+app.use((0, cors_1.default)({ credentials: true, origin: 'http://localhost:5173' }));
 // 몽고DB 연결
 (0, models_1.default)();
 // 회원가입

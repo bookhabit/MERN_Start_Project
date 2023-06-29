@@ -24,7 +24,8 @@ useContext
 <p>이미지 파일 업로드 미들웨어</p>
 
 <h2>애니메이션</h2>
-<p>gasp 라이브러리를 활용한 간단한 애니메이션</p>
+<p>gasp 라이브러리를 활용한 간단한 애니메이션(이동)</p>
+<p>react-spring을 활용한 간단한 애니메이션(fadein)</p>
 
 <h2>공통컴포넌트</h2>
 <p>src > elements 디렉토리에 기본 Input,Button,Label,Textarea  </p>
