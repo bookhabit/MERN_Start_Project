@@ -10,7 +10,7 @@ const Toggle = () => {
         transform:isToggled?"translate3d(0,0,0)":"translate3d(0,-50px,0)",
     })
     return (
-        <div className='flex flex-col items-center justify-center gap-5 min-h-screen'>
+        <div className='flex flex-col items-center justify-center gap-5 h-96'>
             <animated.h1 style={fade} className={'text-2xl font-bold'}>Hello</animated.h1>
             <button className='bg-black text-white p-5' onClick={()=>setToggle(!isToggled)}>Toggle</button>
         </div>
