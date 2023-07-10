@@ -95,7 +95,7 @@ app.get('/profile', (req, res) => {
                 throw err;
             const userDoc = yield User_1.default.findById(userData.id);
             const { name, email, _id } = userDoc;
-            res.json({ name, email, _id });
+            res.status(200).json({ name, email, _id });
         }));
     }
     else {

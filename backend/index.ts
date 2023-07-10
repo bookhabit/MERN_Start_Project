@@ -86,7 +86,7 @@ app.get('/profile', (req:Request,res:Response) => {
         if (err) throw err;
        const userDoc = await User.findById(userData.id) as UserType;
        const {name,email,_id} = userDoc;
-      res.json({name,email,_id});
+      res.status(200).json({name,email,_id});
       });
   } else {
       res.json(null);
