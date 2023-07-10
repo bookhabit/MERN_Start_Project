@@ -10,6 +10,7 @@ import PostDetail from './pages/PostDetail';
 import ProfilePage from './pages/ProfilePage';
 import UserPostsPage from './pages/UserPostsPage';
 import {RecoilRoot} from "recoil"
+import ProtectedRoute from './Routes/ProtectedRoute';
 
 axios.defaults.baseURL = "http://localhost:4000"
 axios.defaults.withCredentials = true;
@@ -22,11 +23,13 @@ function App() {
               <Route path="/" element={<IndexPage/>} />
               <Route path="/login" element={<LoginPage/>} />
               <Route path="/register" element={<ReigsterPage/>} />
-              <Route path={'/post/create'} element={<PostFormPage/>}/>
-              <Route path={'/post/update/:id'} element={<PostFormPage/>}/>
+              <Route element={<ProtectedRoute/>}>
+                <Route path={'/post/create'} element={<PostFormPage/>}/>
+                <Route path={'/post/update/:id'} element={<PostFormPage/>}/>
+                <Route path="/account" element={<ProfilePage />} />
+                <Route path="/account/posts" element={<UserPostsPage />} />
+              </Route>
               <Route path={'/post/:id'} element={<PostDetail/>}/>
-              <Route path="/account" element={<ProfilePage />} />
-              <Route path="/account/posts" element={<UserPostsPage />} />
             </Route>
           </Routes>
     </RecoilRoot>
