@@ -17,6 +17,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.12.1",
     "react-spring": "^9.7.2",
+    "recoil": "^0.7.7",
     "tailwind-styled-components": "^2.2.0"
   },
   "devDependencies": {

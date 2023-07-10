@@ -17,9 +17,13 @@ export function UserContextProvider({ children }: { children: React.ReactNode })
   useEffect(() => {
     if (!user) {
       axios.get('/profile')
-            .then(({data}:{data:UserType}) => {
-              setUser(data);
-            });
+      .then((response)=>{
+        if(response.status===200){
+          setUser(response.data as UserType)
+        }else{
+          setUser(null)
+        }
+      })
     }
   }, []);
   return (

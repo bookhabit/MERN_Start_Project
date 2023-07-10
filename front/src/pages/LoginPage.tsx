@@ -1,11 +1,13 @@
 import {Link, Navigate} from "react-router-dom";
-import {useContext, useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState} from "react";
 import axios from "axios";
-import { UserContext, UserContextType } from "../Context/UserContext";
 import Input, { InputChangeEvent } from "../elements/Input";
 import gsap from 'gsap'
-import { ValidateContext, ValidateContextType } from "../Context/ValidateContext";
 import { Button } from "../elements";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { validateModeAtom } from "../recoil/validateAtom";
+import { userAtom } from "../recoil/userAtom";
+import { UserType } from "../Types/userType";
 
 type ValidationLoginForm = {
   email:string,
@@ -17,14 +19,14 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [redirect, setRedirect] = useState(false);
-  const { setUser } = useContext<UserContextType>(UserContext);
+  const setUser = useSetRecoilState(userAtom)
 
   const formRef = useRef(null);
   const [errorMessage,setErrorMessage] = useState<ValidationLoginForm>({
     email:"",
     password:"",
   })
-  const { validateMode,setValidateMode } = useContext<ValidateContextType>(ValidateContext);
+  const [validateMode,setValidateMode] = useRecoilState(validateModeAtom)
 
   useEffect(() => {
     gsap.fromTo(formRef.current,{x: 1000}, {x: 0} )
@@ -87,7 +89,12 @@ export default function LoginPage() {
     if(validateLoginForm()){
       try{
         const {data}  = await axios.post('/login',{email,password})
-        setUser(data)
+        if(data){
+          axios.get('/profile')
+          .then(({data}:{data:UserType}) => {
+            setUser(data);
+          });
+        }
         // 비밀번호 validation
         alert('login successful')
         setRedirect(true)

@@ -49,7 +49,7 @@ export default function PostGallery({post}:IProps){
           <div className="grid gap-1">  
             {post.photos.map((photo,index)=>(
               index===1 && 
-                  <img 
+                  <img key={index}
                     onClick={()=>setShowAllPhotos(true)} className="aspect-square cursor-pointer object-cover" 
                     src={'http://localhost:4000/uploads/'+photo}
                     alt="이미지"/>
@@ -57,7 +57,7 @@ export default function PostGallery({post}:IProps){
             <div className="overflow-hidden">
             {post.photos.map((photo,index)=>(
               index===2 && 
-                  <img 
+                  <img key={index}
                     onClick={()=>setShowAllPhotos(true)} className="aspect-square cursor-pointer object-cover" 
                     src={'http://localhost:4000/uploads/'+photo}
                     alt="이미지"/>

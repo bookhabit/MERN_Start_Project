@@ -1,14 +1,15 @@
 
-import { UserContext } from "../Context/UserContext";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { PostData } from "../Types/PostType";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import Image from "../components/testRestAPI/Image";
+import { useRecoilValue } from "recoil";
+import { userAtom } from "../recoil/userAtom";
 
 export default function IndexPage() {
   const router = useNavigate();
-  const {user} = useContext(UserContext)
+  const user = useRecoilValue(userAtom)
   const [posts,setPosts] = useState<PostData[]>([]);
   useEffect(()=>{
     axios.get('/posts').then(response=>{

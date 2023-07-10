@@ -1,11 +1,12 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Navigate} from "react-router-dom";
-import { UserContext } from "../Context/UserContext";
 import axios from "axios";
 import AccountNav from "../components/testRestAPI/AccountNav";
+import { useRecoilState } from "recoil";
+import { userAtom } from "../recoil/userAtom";
 
 export default function ProfilePage() {
-    const {user,setUser} = useContext(UserContext)
+    const [user,setUser] = useRecoilState(userAtom);
     const [redirect,setRedirect] = useState('');
 
     // 로그아웃

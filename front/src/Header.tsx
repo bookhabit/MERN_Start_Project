@@ -1,10 +1,23 @@
-import { useContext } from "react";
 import {Link, useNavigate} from "react-router-dom";
-import { UserContext, UserContextType } from "./Context/UserContext";
+import { useRecoilState } from "recoil";
+import { userAtom } from "./recoil/userAtom";
+import { useEffect } from "react";
+import axios from "axios";
+import { UserType } from "./Types/userType";
 
 export default function Header() {
-  const { user } = useContext<UserContextType>(UserContext);
+  const [user,setUser] = useRecoilState(userAtom);
   const router = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      axios.get('/profile')
+            .then(({data}:{data:UserType}) => {
+              setUser(data);
+            });
+    }
+  }, []);
+
   return (
     <header className="flex justify-between">
       <Link to={'/'} className="flex items-center gap-1">

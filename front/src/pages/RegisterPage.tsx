@@ -1,10 +1,11 @@
 import {Link, useNavigate} from "react-router-dom";
-import { useContext, useEffect, useRef, useState} from "react";
+import {  useEffect, useRef, useState} from "react";
 import axios from "axios";
-import { ValidateContext, ValidateContextType } from "../Context/ValidateContext";
 import gsap from 'gsap'
 import { Button, Input } from "../elements";
 import { InputChangeEvent } from "../elements/Input";
+import { useRecoilState } from "recoil";
+import { validateModeAtom } from "../recoil/validateAtom";
 
 type ValidationRegisterForm = {
   name:string,
@@ -24,7 +25,7 @@ export default function ReigsterPage() {
     email:"",
     password:"",
   })
-  const { validateMode,setValidateMode } = useContext<ValidateContextType>(ValidateContext);
+  const [validateMode,setValidateMode] = useRecoilState(validateModeAtom)
   
 
   useEffect(() => {
