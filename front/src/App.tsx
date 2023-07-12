@@ -22,6 +22,8 @@ function App() {
             <Route path="/" element={<Layout/>}>
               <Route path="/" element={<IndexPage/>} />
               <Route path="/login" element={<LoginPage/>} />
+              <Route path="/login/github" element={<LoginPage/>} />
+              <Route path="/login/google" element={<LoginPage/>} />
               <Route path="/register" element={<ReigsterPage/>} />
               <Route element={<ProtectedRoute/>}>
                 <Route path={'/post/create'} element={<PostFormPage/>}/>

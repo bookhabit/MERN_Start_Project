@@ -6,7 +6,7 @@ const AuthButton = tw.button`
 `;
 
 const SocialButton=tw.button`
-  flex w-52 h-8 bg-login_btn rounded-lg text-white items-center 
+  flex w-full h-8 bg-primary rounded-2xl text-white items-center justify-center
   gap-3 pl-2
 `;
 

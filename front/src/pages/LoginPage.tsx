@@ -1,4 +1,4 @@
-import {Link, Navigate} from "react-router-dom";
+import {Link, Navigate, useNavigate} from "react-router-dom";
 import { useEffect, useRef, useState} from "react";
 import axios from "axios";
 import Input, { InputChangeEvent } from "../elements/Input";
@@ -8,11 +8,16 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { validateModeAtom } from "../recoil/validateAtom";
 import { userAtom } from "../recoil/userAtom";
 import { UserType } from "../Types/userType";
+import googleSvg from "../assets/auth/google.svg"
+import githubSvg from "../assets/auth/github.svg"
 
 type ValidationLoginForm = {
   email:string,
   password:string
 }
+
+const GITHUB_CLIENT_ID = "1251dd62543c1d6e0fc6";
+const GOOGLE_CLIENT_ID = "454233507421-t57fvs9nsthq9577tkp2eh938cruhvib.apps.googleusercontent.com";
 
 
 export default function LoginPage() {
@@ -121,6 +126,75 @@ export default function LoginPage() {
     return <Navigate to="/"/>
   }
 
+    // 소셜 로그인
+    const router = useNavigate();
+    // 깃허브 로그인
+    async function gitHubLoginAPI(code:string) {
+      console.log('깃허브 로그인 시작')
+      try {
+        const response = await axios.get(`/github/login?code=${code}`);
+        console.log(response);
+        if (response.status === 200) {
+          setUser(response.data as UserType);
+          router("/");
+        }
+      } catch (error) {
+        // 오류 처리
+        console.log(error);
+      }
+    }
+
+    async function googleLoginAPI(code:string) {
+      try {
+        const response = await axios.get(`/google/login?code=${code}`);
+        console.log(response);
+        if (response.status === 200) {
+          setUser(response.data as UserType);
+          router("/");
+        }
+      } catch (error) {
+        // 오류 처리
+        console.log(error);
+      }
+    }
+
+    useEffect(() => {
+      const queryString = window.location.search;
+      const urlParams = new URLSearchParams(queryString);
+      const codeParam = urlParams.get("code");
+      
+      if (codeParam && window.location.pathname === "/login/github") {
+        gitHubLoginAPI(codeParam);
+      }
+
+        // 구글 로그인
+      if (codeParam && window.location.pathname === "/login/google") {
+        googleLoginAPI(codeParam);
+      }
+
+    }, []);
+    
+    
+    
+    async function loginWithGithub(event: React.FormEvent) {
+      event.preventDefault();
+
+      const scope = "user user:email";
+      window.location.assign(
+        `https://github.com/login/oauth/authorize?scope=${scope}&client_id=${GITHUB_CLIENT_ID}`
+      );
+    }
+    
+    async function loginWithGoogle(event: React.FormEvent) {
+      event.preventDefault();
+
+      const redirectUri = "http://localhost:5173/login/google"
+      const scope = "profile email";
+      window.location.assign(
+        `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`
+      );
+    }
+
   return (
     <div className="mt-4 grow flex items-center justify-around">
       <div ref={formRef} className="mb-64">
@@ -148,11 +222,26 @@ export default function LoginPage() {
                     errorMessage={errorMessage.password}
                     validateMode={validateMode}
                 />
-
-              <Button
-                  text="Login"
-                  sort="auth"
-              />
+              <div className="flex flex-col gap-5">
+                <Button
+                    text="Login"
+                    sort="auth"
+                />
+                <Button
+                  text="Login with Github"
+                  _onClick={loginWithGithub}
+                  sort="social"
+                  icon={githubSvg}
+                  alt="깃허브 로고"
+                />
+                <Button
+                      text="Login with Google"
+                      _onClick={loginWithGoogle}
+                      sort="social"
+                      icon={googleSvg}
+                      alt="구글로고"
+                />
+              </div>
           <div className="text-center py-2 text-gray-500">
             Don't have an account yet? 
             <Link className="underline text-black ml-4" to={'/register'}>

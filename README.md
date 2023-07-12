@@ -3,11 +3,7 @@ MERN 환경의 프로젝트를 바로 시작할 수 있는 보일러 플레이�
 
 <h2>프론트</h2> 
 <h3>Core</h3>
-<p>React , typescript,recoil</p>
-
-<h3>라우팅<h3>
-<p>react router dom </p>
-<p>protected route</p>
+<p>React , typescript</p>
 
 <h3>스타일링</h3>
 <p>tailwindcss</p>
@@ -38,6 +34,12 @@ useContext
 <h2>form 유효성검사</h2>
 <p>회원가입 로그인 유효성 검사 기능</p>
 
+<h2>소셜로그인</h2>
+<p>깃허브 로그인</p>
+<p>구글 로그인</p>
+
 <h2>환경변수</h2>
 <p>backend 폴더 > env파일 생성</p>
-<p>MONGO_URL=몽고db connect URL 작성</p>
+<p>몽고DB연결 : MONGO_URL=몽고db connect URL 작성</p>
+<p>깃허브 로그인 : GITHUB_CLIENT_ID , GITHUB_CLIENT_SECRET 작성</p>
+<p>구글 로그인 : GITHUB_CLIENT_ID , GITHUB_CLIENT_SECRET,GOOGLE_REDIRECT_URI 작성</p>

@@ -25,6 +25,7 @@ const image_downloader_1 = __importDefault(require("image-downloader"));
 const multer_1 = __importDefault(require("multer"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const axios_1 = __importDefault(require("axios"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const bcryptSalt = bcryptjs_1.default.genSaltSync(10);
@@ -79,6 +80,132 @@ app.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
     else {
         res.status(404).json('해당 이메일의 유저를 찾을 수 없습니다');
+    }
+}));
+// 깃허브 로그인
+app.get('/github/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // 1. 깃허브에 accessToken얻기
+    const baseUrl = "https://github.com/login/oauth/access_token";
+    const body = {
+        client_id: process.env.GITHUB_CLIENT_ID,
+        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        code: req.query.code,
+    };
+    try {
+        const { data: requestToken } = yield axios_1.default.post(baseUrl, body, {
+            headers: { Accept: "application/json" },
+        });
+        console.log(requestToken);
+        // 2. 깃허브에 있는 user정보 가져오기
+        const { access_token } = requestToken; // ③ ~ ④에 해당
+        const apiUrl = "https://api.github.com";
+        const { data: userdata } = yield axios_1.default.get(`${apiUrl}/user`, {
+            headers: { Authorization: `token ${access_token}` },
+        });
+        console.log(userdata);
+        const { data: emailDataArr } = yield axios_1.default.get(`${apiUrl}/user/emails`, {
+            headers: { Authorization: `token ${access_token}` },
+        });
+        const { login: nickname, name } = userdata;
+        const { email } = emailDataArr.find((emailObj) => emailObj.primary === true && emailObj.verified === true);
+        // 3. 이메일과 일치하는 유저를 DB 찾음
+        const dbEmailUser = yield User_1.default.findOne({ email: email });
+        console.log('db로찾은 db유저');
+        // 4. 이메일과 일치하는 유저인지에 따라 회원가입 또는 로그인
+        try {
+            if (dbEmailUser && (dbEmailUser === null || dbEmailUser === void 0 ? void 0 : dbEmailUser.email) === email) {
+                // 이미 존재하는 이메일이면 바로 로그인시키기
+                jsonwebtoken_1.default.sign({
+                    email: dbEmailUser.email,
+                    id: dbEmailUser._id
+                }, jwtSecret, {}, (err, token) => {
+                    if (err)
+                        throw err;
+                    return res.cookie('token', token).status(200).json(dbEmailUser);
+                });
+            }
+            else {
+                // 존재하지 않는 이메일이면 회원가입 후 로그인시키기
+                const userDoc = yield User_1.default.create({
+                    nickName: nickname,
+                    name: name,
+                    email: email,
+                });
+                console.log('회원가입할 때 userDoc', userDoc);
+                jsonwebtoken_1.default.sign({
+                    email: userDoc.email,
+                    id: userDoc._id
+                }, jwtSecret, {}, (err, token) => {
+                    if (err)
+                        throw err;
+                    return res.cookie('token', token).status(200).json(userDoc);
+                });
+            }
+        }
+        catch (e) {
+            res.status(422);
+        }
+    }
+    catch (err) {
+        console.error(err);
+        return res.redirect(500, "/?loginError=서버 에러로 인해 로그인에 실패하였습니다. 잠시 후에 다시 시도해 주세요");
+    }
+}));
+// 구글 로그인
+app.get("/google/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { code } = req.query;
+    // 토큰을 요청하기 위한 구글 인증 서버 url
+    const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
+    // access_token, refresh_token 등의 구글 토큰 정보 가져오기
+    const tokenData = yield axios_1.default.post(GOOGLE_TOKEN_URL, {
+        // x-www-form-urlencoded(body)
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+        grant_type: 'authorization_code',
+    });
+    // email, google id 등을 가져오기 위한 url
+    const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
+    // email, google id 등의 사용자 구글 계정 정보 가져오기
+    const googleUserData = yield axios_1.default.get(GOOGLE_USERINFO_URL, {
+        // Request Header에 Authorization 추가
+        headers: {
+            Authorization: `Bearer ${tokenData.data.access_token}`,
+        },
+    });
+    // userData로 email db확인 
+    const dbEmailUser = yield User_1.default.findOne({ email: googleUserData.data.email });
+    try {
+        // 해당 email이 db에 있으면 토큰발급 후 로그인
+        if (dbEmailUser && (dbEmailUser === null || dbEmailUser === void 0 ? void 0 : dbEmailUser.email) === googleUserData.data.email) {
+            jsonwebtoken_1.default.sign({
+                email: dbEmailUser.email,
+                id: dbEmailUser._id
+            }, jwtSecret, {}, (err, token) => {
+                if (err)
+                    throw err;
+                return res.cookie('token', token).status(200).json(dbEmailUser);
+            });
+        }
+        else {
+            // 해당 email이 db에 없으면 회원가입시키고 토큰발급
+            const userDoc = yield User_1.default.create({
+                name: googleUserData.data.name,
+                email: googleUserData.data.email,
+            });
+            jsonwebtoken_1.default.sign({
+                email: userDoc.email,
+                id: userDoc._id
+            }, jwtSecret, {}, (err, token) => {
+                if (err)
+                    throw err;
+                return res.cookie('token', token).status(200).json(userDoc);
+            });
+        }
+    }
+    catch (err) {
+        res.status(422).json(err);
     }
 }));
 // 로그아웃
