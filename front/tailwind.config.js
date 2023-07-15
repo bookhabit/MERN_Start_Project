@@ -6,6 +6,12 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily:{
+        Noto_Sans_KR:['Noto Sans KR'],
+        Lora:['Lora'],
+        Nanum_Gothic:['Nanum Gothic'],
+        Jua:['Jua'],
+      },
       colors:{
         primary:'#F5385D',
         header_element:'#FFFFFF',

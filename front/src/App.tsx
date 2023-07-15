@@ -11,6 +11,7 @@ import ProfilePage from './pages/ProfilePage';
 import UserPostsPage from './pages/UserPostsPage';
 import {RecoilRoot} from "recoil"
 import ProtectedRoute from './Routes/ProtectedRoute';
+import FontPage from './pages/FontPage';
 
 axios.defaults.baseURL = "http://localhost:4000"
 axios.defaults.withCredentials = true;
@@ -25,6 +26,7 @@ function App() {
               <Route path="/login/github" element={<LoginPage/>} />
               <Route path="/login/google" element={<LoginPage/>} />
               <Route path="/register" element={<ReigsterPage/>} />
+              <Route path="/font" element={<FontPage/>} />
               <Route element={<ProtectedRoute/>}>
                 <Route path={'/post/create'} element={<PostFormPage/>}/>
                 <Route path={'/post/update/:id'} element={<PostFormPage/>}/>
