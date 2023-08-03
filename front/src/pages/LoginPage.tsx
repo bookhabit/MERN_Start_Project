@@ -23,8 +23,8 @@ const GOOGLE_CLIENT_ID = "454233507421-t57fvs9nsthq9577tkp2eh938cruhvib.apps.goo
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [redirect, setRedirect] = useState(false);
   const setUser = useSetRecoilState(userAtom)
+  const router = useNavigate();
 
   const formRef = useRef(null);
   const [errorMessage,setErrorMessage] = useState<ValidationLoginForm>({
@@ -102,7 +102,7 @@ export default function LoginPage() {
         }
         // 비밀번호 validation
         alert('login successful')
-        setRedirect(true)
+        router("/")
       }catch(err:any){
         if(err.response?.status===404){
           setValidateMode(true)
@@ -122,12 +122,7 @@ export default function LoginPage() {
     }
   }
 
-  if(redirect){
-    return <Navigate to="/"/>
-  }
-
     // 소셜 로그인
-    const router = useNavigate();
     // 깃허브 로그인
     async function gitHubLoginAPI(code:string) {
       console.log('깃허브 로그인 시작')
@@ -204,7 +199,7 @@ export default function LoginPage() {
                     type="email"
                     placeholder="your@email.com"
                     _onChange={onChangeInput}
-                    sort="authInput"
+                    sort="auth"
                     value={email}
                     name="email"
                     isValid={ !!errorMessage.email}
@@ -215,7 +210,7 @@ export default function LoginPage() {
                     type="password"
                     placeholder="password"
                     _onChange={onChangeInput}
-                    sort="authInput"
+                    sort="auth"
                     value={password}
                     name="password"
                     isValid={ !!errorMessage.password}

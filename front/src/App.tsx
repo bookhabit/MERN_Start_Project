@@ -12,6 +12,7 @@ import UserPostsPage from './pages/UserPostsPage';
 import {RecoilRoot} from "recoil"
 import ProtectedRoute from './Routes/ProtectedRoute';
 import FontPage from './pages/FontPage';
+import ChattingPage from './pages/ChattingPage';
 
 axios.defaults.baseURL = "http://localhost:4000"
 axios.defaults.withCredentials = true;
@@ -26,6 +27,7 @@ function App() {
               <Route path="/login/github" element={<LoginPage/>} />
               <Route path="/login/google" element={<LoginPage/>} />
               <Route path="/register" element={<ReigsterPage/>} />
+              <Route path="/chat" element={<ChattingPage/>} />
               <Route path="/font" element={<FontPage/>} />
               <Route element={<ProtectedRoute/>}>
                 <Route path={'/post/create'} element={<PostFormPage/>}/>

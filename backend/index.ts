@@ -327,4 +327,8 @@ app.get('/posts',async (req,res)=>{
   res.json(await Post.find()) 
 })
 
+// 채팅기능
+
+
+
 app.listen(4000)

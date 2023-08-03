@@ -32,9 +32,14 @@ export default function IndexPage() {
       </div>
       {user && (
         <div className="absolute w-20 bottom-0 right-0">
-          <button className="bg-primary w-full p-2 text-white rounded-full" onClick={()=>router('/post/create')}>
-            글 등록
-          </button>
+          <div className="flex flex-col gap-8 items-center">
+            <button className="bg-primary w-full p-2 text-white rounded-full" onClick={()=>router('/chat')}>
+              채팅페이지 이동
+            </button>
+            <button className="bg-primary w-full p-2 text-white rounded-full" onClick={()=>router('/post/create')}>
+              글 등록
+            </button>
+          </div>
         </div>
       )}
     </div>

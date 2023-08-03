@@ -19,6 +19,10 @@ const PortfolioInput = tw.input`
   bg-black-50
 `;
 
+const ChattingInput = tw.input`
+  focus:outline-none h-10 w-full p-2 flex-grow bg-white rounded-sm
+`
+
 export type InputValue = string | number
 export type InputChangeEvent = ChangeEvent<HTMLInputElement>
 
@@ -29,7 +33,7 @@ interface IProps{
     _onChange?: (ev: InputChangeEvent) => void
     name:string;
     type:string;
-    sort:string;
+    sort:"auth"|"resume"|"portfolio"|"chatting";
     isValid:boolean;
     errorMessage:string;
     validateMode:boolean;
@@ -41,12 +45,15 @@ const Input = (props:IProps) => {
       return(
         <React.Fragment>
             {label}
-            {sort==="authInput"&&
+            {sort==="auth"&&
             <AuthInput placeholder = {placeholder} onChange={_onChange} type={type} name={name} value={value} isValid={isValid} validateMode={validateMode} />}
-            {sort==="resumeInput"&&
+            {sort==="resume"&&
             <ResumeInput placeholder = {placeholder} onChange={_onChange} type={type} name={name} value={value}/>}
-            {sort==="portfolioInput"&&
+            {sort==="portfolio"&&
             <PortfolioInput placeholder = {placeholder} onChange={_onChange} type={type} name={name} value={value}/>}
+            {sort === "chatting" &&
+              <ChattingInput placeholder = {placeholder} onChange={_onChange} type={type} name={name} value={value}
+            />}
             {isValid && errorMessage && validateMode && (
               <p className="font text-sm text-error_stroke">{errorMessage}</p>
             )}

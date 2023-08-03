@@ -318,4 +318,5 @@ app.get('/post/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* (
 app.get('/posts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.json(yield Post_1.default.find());
 }));
+// 채팅기능
 app.listen(4000);
