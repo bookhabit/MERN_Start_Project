@@ -5,12 +5,16 @@ import { io } from "socket.io-client";
 
 // 소켓연결
 const socket = io("http://localhost:4000",{withCredentials:true}); 
-type MessageType = string; // messages의 타입을 지정합니다.
+type MessageType = {
+    username:string,
+    text:string,
+    time:string,
+}; // messages의 타입을 지정합니다.
 
 const ChattingPage = () => {
     const [messages, setMessages] = useState<MessageType[]>([])
     const [messageInput, setMessageInput] = useState("");  
-    const [broadcast,setBroadcast] = useState('');
+    const [broadcast,setBroadcast] = useState<MessageType>();
     const [errMsg,setErrMsg] = useState('');
     const divUnderMessages = useRef<HTMLDivElement | null>(null);
 
@@ -34,6 +38,7 @@ const ChattingPage = () => {
 
         // 서버로부터 데이터 수신
         socket.on("message from server", (message:MessageType) => {
+            console.log(message)
             setMessages((prevMessage)=>[...prevMessage,message])
         });
 
@@ -57,14 +62,15 @@ const ChattingPage = () => {
                 contacts
             </div>
             <div className='bg-blue-100 w-2/3 flex flex-col p-2 gap-5'>
-                <p>{broadcast}</p>
+                {broadcast && <p>{broadcast?.username} 님이 {broadcast?.text}</p> }
                 <div className="relative h-full">
                     <div className="overflow-y-scroll absolute top-0 left-0 right-0 bottom-2">
                         <div className='flex-grow flex flex-col gap-5' ref={divUnderMessages}>
                             {messages.map((message, index) => (
                                 <div key={index} className='flex items-center gap-5 bg-white'>
-                                    <p className='text-lg'>{message}</p>
-                                    <p className=' text-gray-400 text-md'>2023-08-24 11:51</p>
+                                    <p>{message.username}</p>
+                                    <p className='text-lg'>{message.text}</p>
+                                    <p className=' text-gray-400 text-md'>{message.time}</p>
                                 </div>
                             ))}
                         </div>

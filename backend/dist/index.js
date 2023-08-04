@@ -28,6 +28,7 @@ const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
 const socket_io_1 = require("socket.io");
 const http_1 = require("http");
+const messages_1 = require("./utils/messages");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const bcryptSalt = bcryptjs_1.default.genSaltSync(10);
@@ -331,9 +332,10 @@ const io = new socket_io_1.Server(server, {
 });
 // 사용자 데이터를 저장하는 맵
 const userMap = new Map();
+const testName = '이현진';
 io.on("connection", (socket) => {
     console.log("A user connected");
-    socket.emit("broadcast", '채팅방에 입장하셨습니다');
+    socket.emit("broadcast", (0, messages_1.formatMessage)(testName, '채팅방에 입장하셨습니다'));
     // 연결된 소켓 사용자 정보 얻기
     const cookies = socket.request.headers.cookie;
     if (cookies) {
@@ -355,11 +357,11 @@ io.on("connection", (socket) => {
     // 클라이언트로부터 데이터 수신 - broadcast
     socket.on("message from client", (message) => {
         // 클라이언트로 데이터 전송
-        io.emit("message from server", message);
+        io.emit("message from server", (0, messages_1.formatMessage)('User', message));
     });
     // 연결해제
     socket.on("disconnect", () => {
-        socket.emit('broadcast', '채팅방을 나가셨습니다');
+        socket.emit('broadcast', (0, messages_1.formatMessage)(testName, '채팅방을 나갔습니다'));
         console.log("A user disconnected");
         userMap.delete(socket.id);
     });
