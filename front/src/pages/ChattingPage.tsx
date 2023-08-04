@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import { Button, Input } from '../elements';
 import { InputChangeEvent } from '../elements/Input';
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:4000"); // 백엔드 서버의 주소
+// 소켓연결
+const socket = io("http://localhost:4000"); 
+type MessageType = string; // messages의 타입을 지정합니다.
 
 const ChattingPage = () => {
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState<MessageType[]>([])
     const [messageInput, setMessageInput] = useState("");  
     const [errMsg,setErrMsg] = useState('');
 
@@ -14,17 +16,21 @@ const ChattingPage = () => {
         setMessageInput(event.target.value)
     }
 
-    const handleSendMessage  = ()=>{
-        socket.emit("chat message", messageInput);
+    const handleSendMessage  = (event:MouseEvent<HTMLButtonElement>)=>{
+        event.preventDefault()
+        // 서버로 데이터 전송
+        socket.emit("hello from client", messageInput);
         setMessageInput("");
     }
 
-    // 채팅연결
+    // 채팅기능
     useEffect(() => {
-        socket.on("chat message", (message) => {
-            console.log(message)
+        // 서버로부터 데이터 수신
+        socket.on("hello from server", (message:MessageType) => {
+            setMessages((prevMessage)=>[...prevMessage,message])
         });
 
+        // 언마운트 시 소켓 연결 해제
         return () => {
             socket.disconnect();
         };
@@ -39,10 +45,12 @@ const ChattingPage = () => {
                 <div className='flex-grow'>
                     messages with selected person
                     {messages.map((message, index) => (
-                        <div key={index}>{message}</div>
+                        <div key={index}>
+                            <p>{message}</p>
+                        </div>
                     ))}
                 </div>
-                <div className='flex items-center gap-2 mb-5'>
+                <form className='flex items-center gap-2 mb-5'>
                     <Input 
                         placeholder='메시지를 입력해주세요'    
                         sort="chatting"
@@ -55,7 +63,7 @@ const ChattingPage = () => {
                         validateMode={false}
                     />
                     <Button _onClick={handleSendMessage } sort="chatting" />
-                </div>
+                </form>
             </div>
         </div>
     );
