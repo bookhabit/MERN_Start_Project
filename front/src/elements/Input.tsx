@@ -7,7 +7,8 @@ interface ValidateProps{
 }
 
 const AuthInput = tw.input<ValidateProps>`
-  w-80 h-8 rounded-lg py-5 px-3 text-black
+  w-full border my-1 py-2 px-3 rounded-2xl h-8 
+  text-black
   ${(props)=>props.isValid && props.validateMode && "bg-error_fill border border-error_stroke"}
 `;
 

@@ -8,13 +8,14 @@ import Post from "./models/Post";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { UserDataType, UserType } from "./Types/UserType";
+import {CustomSocket} from "./Types/SocketType"
 import cookieParser from "cookie-parser";
 import imageDownloader from "image-downloader"
 import multer from 'multer'
 import fs from 'fs'
 import pathLB from "path"
 import axios  from 'axios';
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { createServer } from "http";
 
 dotenv.config();
@@ -340,18 +341,43 @@ const io = new Server(server,  {  // CORS 설정 적용
   }
 })
 
-io.on("connection", (socket) => {
-  console.log("A user connected");
+// 사용자 데이터를 저장하는 맵
+const userMap: Map<string, UserDataType> = new Map();
 
-  //클라이언트로부터 데이터 수신
-  socket.on("hello from client", (message) => {
-    console.log("Message received: ", message);
+io.on("connection", (socket:Socket) => {
+  console.log("A user connected");
+  
+  socket.emit("broadcast", '채팅방에 입장하셨습니다');
+
+  // 연결된 소켓 사용자 정보 얻기
+  const cookies= socket.request.headers.cookie;
+  if(cookies){
+    const tokenCookieString = cookies.split(';').find(str=>str.startsWith('token='))
+    if(tokenCookieString){
+      const token = tokenCookieString.split('=')[1]
+      if(token){
+        // jwt decode
+        jwt.verify(token,jwtSecret,{},(err,userDataCallback)=>{
+          if(err) throw err;
+          const userData = userDataCallback as UserDataType
+          // 사용자 데이터를 맵에 저장
+          userMap.set(socket.id, userData)
+        })
+      }
+    }
+  }
+
+  // 클라이언트로부터 데이터 수신 - broadcast
+  socket.on("message from client", (message) => {
     // 클라이언트로 데이터 전송
-    io.emit("hello from server", message);
+    io.emit("message from server", message);
   });
 
+  // 연결해제
   socket.on("disconnect", () => {
+    socket.emit('broadcast','채팅방을 나가셨습니다')
     console.log("A user disconnected");
+    userMap.delete(socket.id);
   });
 });
 

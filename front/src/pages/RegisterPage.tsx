@@ -182,7 +182,7 @@ export default function ReigsterPage() {
                     type="text"
                     placeholder="이름을 입력해주세요"
                     _onChange={onChangeInput}
-                    sort="authInput"
+                    sort="auth"
                     value={name}
                     name="name"
                     isValid={ !!errorMessage.name}
@@ -193,7 +193,7 @@ export default function ReigsterPage() {
                     type="email"
                     placeholder="your@email.com"
                     _onChange={onChangeInput}
-                    sort="authInput"
+                    sort="auth"
                     value={email}
                     name="email"
                     isValid={!!errorMessage.email}
@@ -204,7 +204,7 @@ export default function ReigsterPage() {
                     type="password"
                     placeholder="password"
                     _onChange={onChangeInput}
-                    sort="authInput"
+                    sort="auth"
                     value={password}
                     name="password"
                     isValid={!!errorMessage.password}
