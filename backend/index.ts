@@ -14,6 +14,8 @@ import multer from 'multer'
 import fs from 'fs'
 import pathLB from "path"
 import axios  from 'axios';
+import { Server } from "socket.io";
+import { createServer } from "http";
 
 dotenv.config();
 const app: Express = express();
@@ -28,6 +30,8 @@ app.use(cors({credentials:true,origin:'http://localhost:5173'}));
 
 // 몽고DB 연결
 connectToMongoDB();
+
+// HTTP 라우팅
 
 // 회원가입
 app.post('/register', async (req:Request,res:Response) => {
@@ -328,7 +332,30 @@ app.get('/posts',async (req,res)=>{
 })
 
 // 채팅기능
+const server = createServer(app);
+const io = new Server(server,  {  // CORS 설정 적용
+  cors: {
+    origin: 'http://localhost:5173',
+    credentials: true
+  }
+})
 
+io.on("connection", (socket) => {
+  console.log("A user connected");
 
+  //클라이언트로부터 데이터 수신
+  socket.on("hello from client", (message) => {
+    console.log("Message received: ", message);
+    // 클라이언트로 데이터 전송
+    io.emit("hello from server", message);
+  });
 
-app.listen(4000)
+  socket.on("disconnect", () => {
+    console.log("A user disconnected");
+  });
+});
+
+const port = 4000;
+server.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});

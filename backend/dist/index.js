@@ -26,6 +26,8 @@ const multer_1 = __importDefault(require("multer"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const axios_1 = __importDefault(require("axios"));
+const socket_io_1 = require("socket.io");
+const http_1 = require("http");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const bcryptSalt = bcryptjs_1.default.genSaltSync(10);
@@ -36,6 +38,7 @@ app.use('/uploads/', express_1.default.static(__dirname + '/uploads'));
 app.use((0, cors_1.default)({ credentials: true, origin: 'http://localhost:5173' }));
 // 몽고DB 연결
 (0, models_1.default)();
+// HTTP 라우팅
 // 회원가입
 app.post('/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, email, password } = req.body;
@@ -319,4 +322,26 @@ app.get('/posts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.json(yield Post_1.default.find());
 }));
 // 채팅기능
-app.listen(4000);
+const server = (0, http_1.createServer)(app);
+const io = new socket_io_1.Server(server, {
+    cors: {
+        origin: 'http://localhost:5173',
+        credentials: true
+    }
+});
+io.on("connection", (socket) => {
+    console.log("A user connected");
+    //클라이언트로부터 데이터 수신
+    socket.on("hello from client", (message) => {
+        console.log("Message received: ", message);
+        // 클라이언트로 데이터 전송
+        io.emit("hello from server", message);
+    });
+    socket.on("disconnect", () => {
+        console.log("A user disconnected");
+    });
+});
+const port = 4000;
+server.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
